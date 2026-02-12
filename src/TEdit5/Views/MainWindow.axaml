@@ -5,66 +5,245 @@
         xmlns:vm="using:TEdit5.ViewModels"
         xmlns:v="using:TEdit5.Views"
         xmlns:c="clr-namespace:TEdit5.Controls"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
         x:Class="TEdit5.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="TEdit51"
+        Title="TEdit5 - Terraria Map Editor"
         x:DataType="vm:MainWindowViewModel"
+        Background="#1a1a2e"
+        MinWidth="900" MinHeight="600"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="38"
+        TransparencyLevelHint="AcrylicBlur"
         >
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key='Dark'>
-                    <SolidColorBrush x:Key='BackgroundBrush'>DodgerBlue</SolidColorBrush>
-                    <SolidColorBrush x:Key='ForegroundBrush'>White</SolidColorBrush>
+                    <SolidColorBrush x:Key='AccentBrush'>#7c3aed</SolidColorBrush>
+                    <SolidColorBrush x:Key='AccentHoverBrush'>#8b5cf6</SolidColorBrush>
+                    <SolidColorBrush x:Key='SurfaceBrush'>#16213e</SolidColorBrush>
+                    <SolidColorBrush x:Key='SurfaceAltBrush'>#0f3460</SolidColorBrush>
+                    <SolidColorBrush x:Key='BorderSubtleBrush'>#2a2a4a</SolidColorBrush>
+                    <SolidColorBrush x:Key='TextPrimaryBrush'>#e2e8f0</SolidColorBrush>
+                    <SolidColorBrush x:Key='TextSecondaryBrush'>#94a3b8</SolidColorBrush>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Window.Resources>
 
     <Window.Styles>
-        <Style Selector="Button">
-            <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+        <!-- Modern Button Style -->
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15" />
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.accent:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+            <Setter Property="RenderTransform" Value="scale(1.02)" />
+        </Style>
+        <Style Selector="Button.accent:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.98)" />
+        </Style>
+
+        <!-- Subtle Button -->
+        <Style Selector="Button.subtle">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15" />
+                    <BrushTransition Property="Foreground" Duration="0:0:0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.subtle:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+
+        <!-- Modern TextBox -->
+        <Style Selector="TextBox.modern">
+            <Setter Property="Background" Value="#0d1117" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="TextBox.modern:focus">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+        </Style>
+
+        <!-- Tab styling -->
+        <Style Selector="TabControl">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Foreground" Duration="0:0:0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="TabItem:selected">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+
+        <!-- GridSplitter -->
+        <Style Selector="GridSplitter">
+            <Setter Property="Background" Value="{DynamicResource BorderSubtleBrush}" />
         </Style>
     </Window.Styles>
 
-    <Grid RowDefinitions="*, 24" ColumnDefinitions="34, 300, 3, *">
+    <Panel>
+        <!-- Acrylic background -->
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="#1a1a2e"
+                    TintOpacity="0.85"
+                    MaterialOpacity="0.65" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
 
-        <v:PaintModeView Grid.Column="0" DataContext="{Binding ToolSelection}"></v:PaintModeView>
-        <Grid Grid.Column="1" Grid.RowSpan="3" RowDefinitions="30,30,*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Button Grid.Row="0" Click="LoadWorldButton_Clicked" HorizontalAlignment="Stretch">Load World</Button>
-            <TextBox Grid.Row="1" Text="{Binding SelectedDocument.World.Title}"  HorizontalAlignment="Stretch" />
-            <v:WorldPropertiesView Grid.Row="2" DataContext="{Binding SelectedDocument}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <Grid RowDefinitions="38, *, 28">
+            <!-- Title Bar -->
+            <Border Grid.Row="0" Background="#12121f" IsHitTestVisible="True" Padding="12,0">
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <TextBlock Text="TEdit5" FontWeight="Bold" FontSize="14" Foreground="#7c3aed" VerticalAlignment="Center" />
+                        <TextBlock Text="Terraria Map Editor" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Opacity="0.7" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding SelectedDocument.World.Title, FallbackValue='No World Loaded'}"
+                                   FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Main Content -->
+            <Grid Grid.Row="1" ColumnDefinitions="42, 280, 4, *">
+
+                <!-- Tool Sidebar -->
+                <Border Grid.Column="0" Background="#12121f" Padding="4,8" CornerRadius="0,8,8,0" Margin="0,4,0,4">
+                    <v:PaintModeView DataContext="{Binding ToolSelection}" />
+                </Border>
+
+                <!-- Properties Panel -->
+                <Border Grid.Column="1" Background="#16213e" Margin="4,4,0,4" CornerRadius="8" Padding="0" ClipToBounds="True">
+                    <Grid RowDefinitions="Auto, Auto, *">
+                        <!-- Load World Button -->
+                        <Border Grid.Row="0" Padding="10,10,10,6">
+                            <Button Classes="accent" Click="LoadWorldButton_Clicked" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <i:Icon Value="mdi-folder-open" FontSize="16" />
+                                    <TextBlock Text="Load World" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </Border>
+
+                        <!-- World Title -->
+                        <Border Grid.Row="1" Padding="10,4,10,6">
+                            <TextBox Classes="modern" Text="{Binding SelectedDocument.World.Title}"
+                                     Watermark="World Name" IsReadOnly="True" />
+                        </Border>
+
+                        <!-- World Properties -->
+                        <Border Grid.Row="2" Margin="0" ClipToBounds="True">
+                            <v:WorldPropertiesView DataContext="{Binding SelectedDocument}"
+                                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Splitter -->
+                <GridSplitter Grid.Column="2" Width="4" ResizeDirection="Columns" Background="Transparent">
+                    <GridSplitter.Styles>
+                        <Style Selector="GridSplitter">
+                            <Setter Property="Cursor" Value="SizeWestEast" />
+                        </Style>
+                        <Style Selector="GridSplitter:pointerover">
+                            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                        </Style>
+                    </GridSplitter.Styles>
+                </GridSplitter>
+
+                <!-- Document Area -->
+                <Border Grid.Column="3" Margin="0,4,4,4" CornerRadius="8" ClipToBounds="True" Background="#0d1117">
+                    <TabControl
+                        ItemsSource="{Binding DocumentService.Documents}"
+                        SelectedItem="{Binding SelectedDocument}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" MinHeight="300" MinWidth="300"
+                        Padding="0">
+                        <TabControl.ContentTemplate>
+                            <DataTemplate x:DataType="vm:DocumentViewModel">
+                                <v:DocumentView DataContext="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <i:Icon Value="mdi-earth" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    <TextBlock Text="{Binding World.Title}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                    </TabControl>
+                </Border>
+            </Grid>
+
+            <!-- Status Bar -->
+            <Border Grid.Row="2" Background="#12121f" Padding="12,4" CornerRadius="8,8,0,0" Margin="4,0,4,0">
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Ellipse Width="6" Height="6" Fill="#22c55e" VerticalAlignment="Center" />
+                            <TextBlock Text="Ready" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding ProgressText, Mode=OneWay}" FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <ProgressBar Value="{Binding ProgressPercentage, Mode=OneWay}"
+                                     Width="120" Height="4" MinHeight="4"
+                                     Foreground="{DynamicResource AccentBrush}"
+                                     Background="#2a2a4a" CornerRadius="2" />
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Grid>
-
-        <GridSplitter Grid.Column="2" Width="3" ResizeDirection="Columns" Background="Gray" />
-
-        <TabControl
-            Grid.Column="3"
-            Grid.Row="0"
-            ItemsSource="{Binding DocumentService.Documents}"
-            SelectedItem="{Binding SelectedDocument}"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch" MinHeight="300" MinWidth="300">
-            <TabControl.ContentTemplate>
-                <DataTemplate x:DataType="vm:DocumentViewModel">
-                    <v:DocumentView DataContext="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding World.Title}" />
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-        </TabControl>
-
-        <Border Grid.ColumnSpan="3" Grid.Row="1" MinHeight="24" Padding="8,4" BorderThickness="0,1,0,0" BorderBrush="#666666">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
-                <Label Margin="2,0" Content="{Binding ProgressText, Mode=OneWay}" />
-                <ProgressBar Margin="2,0" Value="{Binding ProgressPercentage, Mode=OneWay}" />
-            </StackPanel>
-        </Border>
-    </Grid>
+    </Panel>
 
 </Window>

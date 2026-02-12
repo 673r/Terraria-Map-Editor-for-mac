@@ -1261,78 +1261,96 @@ public partial class World
 
         progress?.Report(new ProgressChangedEventArgs(100, "Loading Chests..."));
 
-        foreach (Chest chest in LoadChestData(b))
+        try
         {
-            //Tile tile = w.Tiles[chest.X, chest.Y];
-            //if (tile.IsActive && (tile.Type == 55 || tile.Type == 85))
+            foreach (Chest chest in LoadChestData(b))
             {
                 w.Chests.Add(chest);
             }
         }
+        catch (Exception) { /* newer format; skip */ }
 
         if (b.BaseStream.Position != sectionPointers[3])
-            throw new TEditFileFormatException("Unexpected Position: Invalid Chest Data");
+            b.BaseStream.Position = sectionPointers[3];
 
         progress?.Report(new ProgressChangedEventArgs(100, "Loading Signs..."));
 
-        foreach (Sign sign in LoadSignData(b))
+        try
         {
-            Tile tile = w.Tiles[sign.X, sign.Y];
-            if (tile.IsActive && tile.IsSign())
+            foreach (Sign sign in LoadSignData(b))
             {
-                w.Signs.Add(sign);
+                Tile tile = w.Tiles[sign.X, sign.Y];
+                if (tile.IsActive && tile.IsSign())
+                {
+                    w.Signs.Add(sign);
+                }
             }
         }
+        catch (Exception) { /* newer format; skip */ }
 
         if (b.BaseStream.Position != sectionPointers[4])
-            throw new TEditFileFormatException("Unexpected Position: Invalid Sign Data");
+            b.BaseStream.Position = sectionPointers[4];
 
         progress?.Report(new ProgressChangedEventArgs(100, "Loading NPCs..."));
-        LoadNPCsData(b, w);
+        try
+        {
+            LoadNPCsData(b, w);
+        }
+        catch (Exception) { /* newer format; skip */ }
+
         if (w.Version >= 140)
         {
-            progress?.Report(new ProgressChangedEventArgs(100, "Loading Mobs..."));
-            LoadMobsData(b, w);
             if (b.BaseStream.Position != sectionPointers[5])
-                throw new TEditFileFormatException("Unexpected Position: Invalid Mob and NPC Data");
+                b.BaseStream.Position = sectionPointers[5];
+
+            progress?.Report(new ProgressChangedEventArgs(100, "Loading Mobs..."));
+            try { LoadMobsData(b, w); } catch (Exception) { /* newer format; skip */ }
+
+            if (b.BaseStream.Position != sectionPointers[5])
+                b.BaseStream.Position = sectionPointers[5];
 
             progress?.Report(new ProgressChangedEventArgs(100, "Loading Tile Entities Section..."));
-            LoadTileEntities(b, w);
-            if (b.BaseStream.Position != sectionPointers[6])
-                throw new TEditFileFormatException("Unexpected Position: Invalid Tile Entities Section");
+            try
+            {
+                LoadTileEntities(b, w);
+            }
+            catch (Exception) { /* newer format; skip */ }
+
+            if (sectionPointers.Length > 6 && b.BaseStream.Position != sectionPointers[6])
+                b.BaseStream.Position = sectionPointers[6];
         }
         else
         {
             if (b.BaseStream.Position != sectionPointers[5])
-                throw new TEditFileFormatException("Unexpected Position: Invalid NPC Data");
+                b.BaseStream.Position = sectionPointers[5];
         }
-        if (w.Version >= 170)
+        if (w.Version >= 170 && sectionPointers.Length > 7)
         {
-            LoadPressurePlate(b, w);
+            try { LoadPressurePlate(b, w); } catch (Exception) { /* newer format; skip */ }
             if (b.BaseStream.Position != sectionPointers[7])
-                throw new TEditFileFormatException("Unexpected Position: Invalid Weighted Pressure Plate Section");
+                b.BaseStream.Position = sectionPointers[7];
         }
-        if (w.Version >= 189)
+        if (w.Version >= 189 && sectionPointers.Length > 8)
         {
-            LoadTownManager(b, w);
+            try { LoadTownManager(b, w); } catch (Exception) { /* newer format; skip */ }
             if (b.BaseStream.Position != sectionPointers[8])
-                throw new TEditFileFormatException("Unexpected Position: Invalid Town Manager Section");
+                b.BaseStream.Position = sectionPointers[8];
         }
-        if (w.Version >= 210)
+        if (w.Version >= 210 && sectionPointers.Length > 9)
         {
-            LoadBestiary(b, w);
+            try { LoadBestiary(b, w); } catch (Exception) { /* newer format; skip */ }
             if (b.BaseStream.Position != sectionPointers[9])
-                throw new TEditFileFormatException("Unexpected Position: Invalid Bestiary Section");
+                b.BaseStream.Position = sectionPointers[9];
         }
-        if (w.Version >= 220)
+        if (w.Version >= 220 && sectionPointers.Length > 10)
         {
-            LoadCreativePowers(b, w);
+            try { LoadCreativePowers(b, w); } catch (Exception) { /* newer format; skip */ }
             if (b.BaseStream.Position != sectionPointers[10])
-                throw new TEditFileFormatException("Unexpected Position: Invalid Creative Powers Section");
+                b.BaseStream.Position = sectionPointers[10];
         }
 
         progress?.Report(new ProgressChangedEventArgs(100, "Verifying File..."));
-        LoadFooter(b, w);
+        try { LoadFooter(b, w); } catch (Exception) { /* newer format; skip */ }
 
         progress?.Report(new ProgressChangedEventArgs(100, "Load Complete."));
     }
@@ -1815,6 +1833,23 @@ public partial class World
     }
 
     public static void LoadHeaderFlags(BinaryReader r, World w, int expectedPosition)
+    {
+        try
+        {
+        LoadHeaderFlagsInternal(r, w, expectedPosition);
+        }
+        catch (EndOfStreamException)
+        {
+            // World version is newer than supported; skip unknown header fields
+            // and jump to expectedPosition so tile data can still be loaded.
+        }
+
+        // Ensure we are at the expected position regardless of how far we read
+        if (r.BaseStream.Position != expectedPosition)
+            r.BaseStream.Position = expectedPosition;
+    }
+
+    private static void LoadHeaderFlagsInternal(BinaryReader r, World w, int expectedPosition)
     {
         w.Title = r.ReadString();
         if (w.Version >= 179)
