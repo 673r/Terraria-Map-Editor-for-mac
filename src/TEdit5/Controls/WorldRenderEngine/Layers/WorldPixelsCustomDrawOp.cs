@@ -42,38 +42,30 @@ public class RasterTileRenderer
 
         var bmp = new SKBitmap(tileSizeX, tileSizeY, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
 
-        var world = _world;
-        int worldWidth = world.TilesWide;
-        int worldHeight = world.TilesHigh;
-
-        var blocks = world.Tiles;
+        int worldWidth = _world.TilesWide;
+        int worldHeight = _world.TilesHigh;
+        var blocks = _world.Tiles;
 
         int blockX = xTile * tileSizeX;
         int blockY = yTile * tileSizeY;
 
-        for (int x = 0; x + blockX < worldWidth && x < tileSizeX; x++)
+        int drawWidth = Math.Min(tileSizeX, worldWidth - blockX);
+        int drawHeight = Math.Min(tileSizeY, worldHeight - blockY);
+
+        if (drawWidth <= 0 || drawHeight <= 0) return bmp;
+
+        for (int y = 0; y < drawHeight; y++)
         {
-            for (int y = 0; y + blockY < worldHeight && y < tileSizeY; y++)
+            int currentBlockY = y + blockY;
+            var bgColor = GetBackgroundColor(_world, currentBlockY);
+
+            for (int x = 0; x < drawWidth; x++)
             {
-                var currentBlockX = x + blockX;
-                var currentBlockY = y + blockY;
-
-                var block = blocks[currentBlockX, currentBlockY];
-                //if (block.IsActive)
-                {
-                    var bgColor = GetBackgroundColor(_world, currentBlockY);
-                    var tileColor = PixelMap.GetTileColor(block, bgColor).ToSKColor().WithAlpha(255);
-
-                    bmp.SetPixel(
-                        x,
-                        y,
-                        tileColor);
-                }
+                var block = blocks[x + blockX, currentBlockY];
+                var tileColor = PixelMap.GetTileColor(block, bgColor).ToSKColor().WithAlpha(255);
+                bmp.SetPixel(x, y, tileColor);
             }
         }
-
-        //bmp.SetImmutable();
-
 
         return bmp;
     }
@@ -91,21 +83,21 @@ public class RasterTileRenderer
         int blockY = yTile * tileSizeY;
 
         int startX = Math.Max(0, dirtyRegion.Left);
-        int endX = Math.Min(tileSizeX, dirtyRegion.Right);
+        int endX = Math.Min(tileSizeX, Math.Min(dirtyRegion.Right, worldWidth - blockX));
         int startY = Math.Max(0, dirtyRegion.Top);
-        int endY = Math.Min(tileSizeY, dirtyRegion.Bottom);
+        int endY = Math.Min(tileSizeY, Math.Min(dirtyRegion.Bottom, worldHeight - blockY));
 
-        for (int x = startX; x < endX && x + blockX < worldWidth; x++)
+        if (startX >= endX || startY >= endY) return;
+
+        for (int y = startY; y < endY; y++)
         {
-            for (int y = startY; y < endY && y + blockY < worldHeight; y++)
+            int currentBlockY = y + blockY;
+            var bgColor = GetBackgroundColor(_world, currentBlockY);
+
+            for (int x = startX; x < endX; x++)
             {
-                var currentBlockX = x + blockX;
-                var currentBlockY = y + blockY;
-
-                var block = blocks[currentBlockX, currentBlockY];
-                var bgColor = GetBackgroundColor(_world, currentBlockY);
+                var block = blocks[x + blockX, currentBlockY];
                 var tileColor = PixelMap.GetTileColor(block, bgColor).ToSKColor().WithAlpha(255);
-
                 bmp.SetPixel(x, y, tileColor);
             }
         }

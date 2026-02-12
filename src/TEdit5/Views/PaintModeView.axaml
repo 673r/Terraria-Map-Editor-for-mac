@@ -6,25 +6,54 @@
              xmlns:c="clr-namespace:TEdit5.Controls"
 			 xmlns:vm="using:TEdit5.ViewModels"
 			 xmlns:editor="using:TEdit5.Editor"
-             mc:Ignorable="d" d:DesignWidth="32" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="36" d:DesignHeight="450"
              x:Class="TEdit5.Views.PaintModeView"
 			 x:DataType="vm:ToolSelectionViewModel">
+
+	<UserControl.Styles>
+		<Style Selector="ToggleButton.tool">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="CornerRadius" Value="6" />
+			<Setter Property="Width" Value="34" />
+			<Setter Property="Height" Value="34" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.12" />
+					<TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+				</Transitions>
+			</Setter>
+		</Style>
+		<Style Selector="ToggleButton.tool:pointerover">
+			<Setter Property="Background" Value="#2a2a4a" />
+		</Style>
+		<Style Selector="ToggleButton.tool:checked">
+			<Setter Property="Background" Value="#7c3aed" />
+		</Style>
+		<Style Selector="ToggleButton.tool:checked:pointerover">
+			<Setter Property="Background" Value="#8b5cf6" />
+		</Style>
+		<Style Selector="ToggleButton.tool:pressed">
+			<Setter Property="RenderTransform" Value="scale(0.92)" />
+		</Style>
+	</UserControl.Styles>
+
     <UserControl.Resources>
         <DataTemplate x:Key="toolBarItemTemplate" x:DataType="editor:IMouseTool">
             <ToggleButton
-				Margin="1"
-				Height="32"
-				Width="32"
+				Classes="tool"
+				Margin="0,1"
 				Command="{Binding $parent.((vm:ToolSelectionViewModel)DataContext).SetToolCommand}"
 				CommandParameter="{Binding}"
 				IsChecked="{Binding IsActive}"
                 ToolTip.Tip="{Binding Tooltip}" >
-                <Panel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-                    <i:Icon Value="{Binding IconName}" FontSize="20" Foreground="White" />
+                <Panel HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <i:Icon Value="{Binding IconName}" FontSize="18" Foreground="#e2e8f0" />
                 </Panel>
             </ToggleButton>
         </DataTemplate>
     </UserControl.Resources>
-    <ItemsControl ItemsSource="{Binding Tools}" ItemTemplate="{StaticResource toolBarItemTemplate}" >
-    </ItemsControl>
+    <ItemsControl ItemsSource="{Binding Tools}" ItemTemplate="{StaticResource toolBarItemTemplate}" />
 </UserControl>

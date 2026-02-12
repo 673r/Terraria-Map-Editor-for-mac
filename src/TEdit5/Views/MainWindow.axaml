@@ -13,9 +13,6 @@
         x:DataType="vm:MainWindowViewModel"
         Background="#1a1a2e"
         MinWidth="900" MinHeight="600"
-        ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaTitleBarHeightHint="38"
-        TransparencyLevelHint="AcrylicBlur"
         >
 
     <Window.Resources>
@@ -126,20 +123,9 @@
     </Window.Styles>
 
     <Panel>
-        <!-- Acrylic background -->
-        <ExperimentalAcrylicBorder IsHitTestVisible="False">
-            <ExperimentalAcrylicBorder.Material>
-                <ExperimentalAcrylicMaterial
-                    BackgroundSource="Digger"
-                    TintColor="#1a1a2e"
-                    TintOpacity="0.85"
-                    MaterialOpacity="0.65" />
-            </ExperimentalAcrylicBorder.Material>
-        </ExperimentalAcrylicBorder>
-
-        <Grid RowDefinitions="38, *, 28">
-            <!-- Title Bar -->
-            <Border Grid.Row="0" Background="#12121f" IsHitTestVisible="True" Padding="12,0">
+        <Grid RowDefinitions="Auto, *, 28">
+            <!-- Header Bar -->
+            <Border Grid.Row="0" Background="#12121f" Padding="12,6" MinHeight="32">
                 <Grid ColumnDefinitions="Auto, *, Auto">
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                         <TextBlock Text="TEdit5" FontWeight="Bold" FontSize="14" Foreground="#7c3aed" VerticalAlignment="Center" />
